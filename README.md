@@ -6,44 +6,36 @@
 
 ## What it does
 
-- Users log in and submit predictions for every World Cup 2026 match
+- Players log in and submit predictions for every World Cup 2026 match
 - Points awarded for correct result, correct score, and correct group-stage advancement
 - Live leaderboard updates as actual match results come in
-- Everyone sees everyone's predictions after a match locks (no post-hoc edits)
+- Predictions lock at kickoff — no post-hoc edits
 
-Built for a friend group of [N] people during the tournament.
+Built for a 12-15 person friend group during the tournament.
 
 ---
 
 ## Tech stack
 
-- **Frontend:** React, [Tailwind CSS or whatever styling you used]
-- **Backend / DB:** Supabase (Postgres + Auth + Row Level Security)
-- **Hosting:** Netlify
-- **Auth:** Supabase magic-link email login
+- **Frontend:** React
+- **Backend / DB:** Supabase (Postgres + Auth)
+- **Hosting:** Vercel
+- **Match results:** Pulled from a third-party football API (Football-Data.org)
 
 ---
 
 ## Why I built it
 
-My friends and I wanted a prediction game for the 2026 World Cup, but every existing app had either ads, paywalls, or wouldn't let us customize the scoring. So I built one.
+My friends and I wanted a prediction game for the 2026 World Cup. Every existing app had ads, paywalls, or wouldn't let us customize the scoring. So I built one that does exactly what we needed and nothing we didn't.
 
 Along the way I learned:
-- How to design Postgres schemas with Row Level Security so users can't modify each other's predictions
-- How to lock predictions by match kickoff time (database-level enforcement, not just frontend validation)
-- How to deploy a real-time-ish leaderboard without rebuilding the world on every page load
+- Designing a Postgres schema that enforces prediction lockout at kickoff time (database-level, not just frontend validation)
+- Working with Supabase Auth + Row Level Security so users can only edit their own predictions
+- Shipping a small full-stack app end-to-end: schema design, API wiring, frontend, deployment
 
 ---
 
-## Architecture notes
-
-- Predictions table has a trigger that rejects writes after the match's kickoff timestamp (prevents cheating via API)
-- Match results populated from [source: manual admin UI / external API, whichever you used]
-- Scoring runs in a Postgres function so recomputing the leaderboard is a single call
-
----
-
-## Setup (if you want to run it locally)
+## Setup (to run your own copy)
 
 ```bash
 git clone https://github.com/MohanadddAmrr/wc-predict.git
@@ -51,20 +43,13 @@ cd wc-predict
 
 npm install
 
-# Set up your own Supabase project and copy the URL + anon key
+# Copy environment variables and fill in your own Supabase credentials
 cp .env.example .env.local
-# Edit .env.local with your Supabase credentials
 
 npm run dev
 ```
 
-You'll also need to run the SQL migrations in `/supabase/migrations` against your Supabase instance.
-
----
-
-## Status
-
-Shipped and running for the 2026 World Cup. ~[N] active users (my friend group).
+You'll also need a Supabase project with the schema matching this app, and an API key for the football results service.
 
 ---
 
